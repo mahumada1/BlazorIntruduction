@@ -1,0 +1,57 @@
+﻿@page "/Todo"
+@inject OrderState orderState
+<h3>Todo</h3>
+<h2>Mensaje Pagina: @orderState.MensajePagina</h2>
+<input @bind="orderState.MensajePagina" @bind:event="oninput" />
+
+<ul>
+    @foreach(var item in ListaTareas)
+    {
+        <li style="@(item.Finalizada?"text-decoration: line-through; color: red;":string.Empty)">@item.Nombre / @item.Fecha  [@item.Finalizada]   <button @onclick="(()=> FinalizarTarea(item.Id))" style="@(item.Finalizada?"display: none;":string.Empty)" >OK</button></li>
+    }
+</ul>
+
+<input @bind="NombreTarea" @bind:event="oninput" placeholder="Agregar Tarea" />
+<input @bind="FechaTarea" placeholder="Agregar Fecha" />
+<button @onclick="AgregarTarea">Agregar Tarea</button>
+
+
+@if(!string.IsNullOrEmpty(this.NombreTarea))
+{
+    <p>Tarea: @NombreTarea   Fecha: @FechaTarea</p>
+}
+
+
+
+@code {
+    public List<TodoItem> ListaTareas { get; set; } = new List<TodoItem>();
+    public int NumeroTareas { get; set; }
+
+    public string NombreTarea { get; set; }
+    public string FechaTarea { get; set; }
+
+    public void FinalizarTarea(int id)
+    {
+        var item = this.ListaTareas.First(t => t.Id == id);
+        item.Finalizada = true;
+    }
+
+
+    public void AgregarTarea()
+    {
+
+        if (string.IsNullOrEmpty(this.NombreTarea)) return;
+
+        this.ListaTareas.Add(new TodoItem
+            {
+                Id = this.ListaTareas.Count(),
+                Nombre = this.NombreTarea,
+                Fecha = this.FechaTarea,
+                Finalizada = false
+            });
+
+        this.NombreTarea = string.Empty;
+        this.FechaTarea = string.Empty;
+    }
+
+}
